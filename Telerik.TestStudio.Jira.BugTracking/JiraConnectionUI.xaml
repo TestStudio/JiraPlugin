@@ -1,0 +1,150 @@
+﻿<!-- 
+    This control will be placed inside a Grid that has a fixed size of 390w x 382h.
+    It has auto scroll so that if this control doesn't fit, the vertical and/or horizontal
+    scroll bars will automatically be displayed as needed.
+    -->
+<UserControl x:Class="Telerik.TestStudio.Jira.BugTracking.JiraConnectionUI"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:c="clr-namespace:Telerik.TestStudio.Jira.BugTracking"
+             xmlns:System="clr-namespace:System;assembly=mscorlib"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             mc:Ignorable="d"
+             d:DesignHeight="382" d:DesignWidth="390">
+    <UserControl.Resources>
+        <Style x:Key="uriInError" TargetType="{x:Type ComboBox}">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="true">
+                    <Setter Property="ToolTip"
+                            Value="{Binding RelativeSource={x:Static RelativeSource.Self},
+                            Path=(Validation.Errors)[0].ErrorContent}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="{x:Type ListBoxItem}">
+            <Style.Resources>
+                <!--SelectedItem with focus-->
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#FFBFBECC"/>
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black"/>
+                <!--SelectedItem without focus-->
+                <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#FFCBC9D9"/>
+                <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="Black"/>
+                <!--<SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="#FFEDEDED"/>-->
+            </Style.Resources>
+            <Style.Triggers>
+                <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                    <Setter Property="Background" Value="#19FFF8EF" />
+                </Trigger>
+                <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                    <Setter Property="Background" Value="#FFEDEDED" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <ControlTemplate x:Key="validationTemplate">
+            <DockPanel>
+                <TextBlock Foreground="Red" FontSize="20">!</TextBlock>
+                <AdornedElementPlaceholder/>
+            </DockPanel>
+        </ControlTemplate>
+        <c:UriStringToBoolConverter x:Key="UriToBoolConverter" />
+        <c:SelectedProjectToBoolConverter x:Key="SelectedProjectToBoolConverter" />
+        <RoutedUICommand x:Key="GetProjectsCommand" Text="Get_JIRA_Projects" />
+    </UserControl.Resources>
+    <UserControl.CommandBindings>
+        <CommandBinding Command="{StaticResource GetProjectsCommand}" Executed="GetProjectsCmdExecuted" CanExecute="GetProjectsCanExecute" />
+    </UserControl.CommandBindings>
+    <xctk:BusyIndicator IsBusy="{Binding IsBusy}">
+        <Grid>
+            <GroupBox x:Name="UrlGroupBox" Header="Please enter the URL for your server" VerticalAlignment="Top" Height="60" Margin="5,0,5,5">
+                <Grid>
+                    <Label x:Name="lblServers"
+                           Content="Url:"
+                           Height="23"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Top"
+                           Margin="8,6,0,0"
+                           Target="{Binding ElementName=cbServers}" />
+                    <ComboBox x:Name="cbServers"
+                              Height="23"
+                              Width="182"
+                              HorizontalAlignment="Left"
+                              VerticalAlignment="Top"
+                              Margin="42,6,0,0"
+                              ItemsSource="{Binding JiraSettings.MruServers}"
+                              SelectedItem="{Binding JiraSettings.ServerName}"
+                              IsEditable="True"
+                              Validation.ErrorTemplate="{StaticResource validationTemplate}"
+                              Style="{StaticResource uriInError}"
+                    >
+                        <ComboBox.Text>
+                            <Binding Path="ServerName" UpdateSourceTrigger="PropertyChanged" Mode="TwoWay">
+                                <Binding.ValidationRules>
+                                    <c:UriValidation />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </ComboBox.Text>
+                    </ComboBox>
+                </Grid>
+            </GroupBox>
+            <GroupBox x:Name="CredentialsGroupBox"
+                      Header="Please enter your credentials" VerticalAlignment="Top"
+                      Margin="5,66,5,0"
+                      IsEnabled="{Binding ElementName=cbServers, Path=Text, Converter={StaticResource UriToBoolConverter}, ConverterParameter=Text}"
+                      Height="90">
+                <Grid>
+                    <Grid x:Name="grid1" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                    <Label x:Name="lblUser" Content="User:" Height="23" HorizontalAlignment="Left" Margin="6,6,0,0" VerticalAlignment="Top" />
+                    <TextBox x:Name="tbUser"
+                             Height="23"
+                             Width="120"
+                             HorizontalAlignment="Left"
+                             VerticalAlignment="Top"
+                             Margin="75,8,0,0"
+                             Text="{Binding User, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+                    <Label x:Name="lblPassword" Content="Password:" Height="23" HorizontalAlignment="Left" Margin="6,35,0,0" VerticalAlignment="Top" />
+                    <PasswordBox x:Name="passwordBox1"
+                                 c:PasswordBoxAssistant.BindPassword="True" 
+                                 c:PasswordBoxAssistant.BoundPassword="{Binding Password, Mode=TwoWay}"
+                                 Height="23"
+                                 Width="120"
+                                 HorizontalAlignment="Left"
+                                 VerticalAlignment="Top"
+                                 Margin="75,35,0,0" />
+                    <Button x:Name="btnListProjects"
+                            Content="&gt;"
+                            HorizontalAlignment="Left" VerticalAlignment="Top"
+                            Width="27" Height="27"
+                            Margin="201,33,0,0"
+                            BorderThickness="1"
+                            Opacity="0.995"
+                            BorderBrush="#72727070"
+                            Background="#0C000000"
+                            ToolTip="Get List of Projects from JIRA"
+                            Command="{StaticResource GetProjectsCommand}"
+                            CommandTarget="{Binding ElementName=lbProjects}"
+                            IsDefault="{Binding ElementName=lbProjects, Path=SelectedItem, Converter={StaticResource SelectedProjectToBoolConverter}, ConverterParameter=True}"
+                            >
+                    </Button>
+                    <TextBlock Name="errorMessaage" Text="{Binding ErrorMessage}" Height="61" HorizontalAlignment="Left" Margin="230,6,0,0" VerticalAlignment="Top" Width="138" TextWrapping="WrapWithOverflow" Foreground="Red" />
+                </Grid>
+            </GroupBox>
+            <GroupBox x:Name="ProjectsGroupBox"
+                      Header="Select your project"
+                      Margin="5,162,5,0"
+                      VerticalAlignment="Top" Height="214">
+                <ListBox x:Name="lbProjects"
+                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                         Margin="10,5,10,10"
+                         VerticalContentAlignment="Top" HorizontalContentAlignment="Left"
+                         AlternationCount="2"
+                         ItemsSource="{Binding ProjectsList}"
+                         SelectedItem="{Binding SelectedProject}"
+                         DisplayMemberPath="name"
+                >
+                </ListBox>
+            </GroupBox>
+        </Grid>
+    </xctk:BusyIndicator>
+</UserControl>

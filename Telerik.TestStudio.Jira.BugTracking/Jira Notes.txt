@@ -1,0 +1,63 @@
+Bas64 encoded value of TelerikUser:Telerik
+VGVsZXJpa1VzZXI6VGVsZXJpaw==
+
+Working JSON sample to create issue in JIRA
+{
+    "fields": {
+       "project":
+       { 
+          "key": "TSCB"
+       },
+       "summary": "REST ye merry gentlemen.",
+       "description": "Creating of an issue using project keys and issue type names using the REST API",
+       "issuetype": {
+          "name": "Bug"
+       }
+    }
+}
+
+
+{
+    "Fields":
+    {
+        "Project":
+        {
+            "Key": "TSCB"
+        },
+        "Summary": "simple title",
+        "Description": "simple content",
+        "IssueType":
+        {
+            "Name": "Bug"
+        }
+    }
+}
+
+JIRA response to Attach File
+[
+{
+	"self":"http://gibson:8090/rest/api/2/attachment/10001",
+	"id":"10001",
+	"filename":"ScratchTest_FailLog_x7282013_x958AM.zip",
+	"author":
+	{
+		"self":"http://gibson:8090/rest/api/2/user?username=TelerikUser",
+		"name":"TelerikUser",
+		"emailAddress":"telerikuser@telerik.com",
+		"avatarUrls":
+		{
+			"16x16":"http://gibson:8090/secure/useravatar?size=xsmall&avatarId=10122",
+			"24x24":"http://gibson:8090/secure/useravatar?size=small&avatarId=10122",
+			"32x32":"http://gibson:8090/secure/useravatar?size=medium&avatarId=10122",
+			"48x48":"http://gibson:8090/secure/useravatar?avatarId=10122"
+		},
+		"displayName":"Telerik User",
+		"active":true
+	},
+	"created":"2013-07-30T16:55:22.692-0500",
+	"size":383984,
+	"mimeType":"application/zip",
+	"content":"http://gibson:8090/secure/attachment/10001/ScratchTest_FailLog_x7282013_x958AM.zip"
+}
+]
+
