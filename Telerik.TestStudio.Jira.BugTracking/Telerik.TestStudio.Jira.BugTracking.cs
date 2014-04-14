@@ -149,10 +149,12 @@ namespace Telerik.TestStudio.Jira.BugTracking
                 this.JiraSettings.ServerName = this.activeJiraConnection.ServerName;
                 this.JiraSettings.User = this.activeJiraConnection.User;
                 this.JiraSettings.Password = this.activeJiraConnection.Password;
-                this.JiraSettings.SelectedProject = this.activeJiraConnection.SelectedProject;
                 this.JiraSettings.ErrorMessage = string.Empty;
+                // This will cause SelectedProject to be reset to null due to data binding.
+                // Be sure to reselect SelectedProject afterward.
                 this.JiraSettings.ProjectsList = new List<JiraProject>();
                 this.JiraSettings.ProjectsList.Add(this.activeJiraConnection.SelectedProject);
+                this.JiraSettings.SelectedProject = this.activeJiraConnection.SelectedProject;
             }
         }
 
@@ -275,7 +277,7 @@ namespace Telerik.TestStudio.Jira.BugTracking
         /// <param name="sender">The object that raised the event.</param>
         /// <param name="e">Event arguments.</param>
         public void jiraConnSettings_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
+       {
             if (e.PropertyName == "SelectedProject")
             {
                 this.OnPropertyChanged("CanSave");
