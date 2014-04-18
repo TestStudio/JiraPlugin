@@ -40,7 +40,6 @@ namespace Telerik.TestStudio.Jira.BugTracking
                 if (value != this.server_name)
                 {
                     this.server_name = value;
-                    this.ProjectsList = null;
                     OnPropertyChanged("ServerName");
                 }
             }
@@ -79,7 +78,6 @@ namespace Telerik.TestStudio.Jira.BugTracking
                 if (value != this.user)
                 {
                     this.user = value;
-                    this.ProjectsList = null;
                     OnPropertyChanged("User");
                 }
             }
@@ -99,7 +97,6 @@ namespace Telerik.TestStudio.Jira.BugTracking
                 if (value != this.password)
                 {
                     this.password = value;
-                    this.ProjectsList = null;
                     OnPropertyChanged("Password");
                 }
             }

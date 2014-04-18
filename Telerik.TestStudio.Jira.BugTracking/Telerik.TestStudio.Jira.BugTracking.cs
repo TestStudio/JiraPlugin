@@ -12,6 +12,48 @@ namespace Telerik.TestStudio.Jira.BugTracking
     /// <summary>
     /// This is the main Test Studio plug-in class. It ties everything together
     /// and provides the main communication between Test Studio and this plug-in.
+    ///
+    /// The sequence of events is this:
+    /// On Project load:
+    ///     1) ResetSettings is called. Intended to let the plugin clear out old
+    ///        setting in prepartion of new settings being loaded.
+    ///     2) ApplyPersistableSettings is called. The deserialized JiraConnectionModel
+    ///        object is passed in. It contains the settings loaded from the projects
+    ///        settings.aiis file.
+    ///
+    /// On clicking the "Bug Tracking" button in the ribbon bar:
+    ///     1) GetPersistableSettings is called. The plugin is expected to return
+    ///        a filled out BugTrackerPersistableSettings object. Test Studio
+    ///        uses this data to fill in the Manaege Bug Tracking dialog.
+    ///
+    /// On clicking the "Configure the connection" button
+    ///     1) CanSave is called. Controls whether or not the Save button is enabled.
+    ///     2) CanClose is called. Controls whether or not the Cancel button is enabled.
+    ///
+    /// On clicking Save:
+    ///     1) OnSave is called. Save the UI settings and make them active.
+    ///     2) GetPersistableSettings is called.
+    ///
+    /// On clicking Cancel:
+    ///     1) OnClose is called. The plugin can clean up any resources or connections that were being used.
+    ///     2) ApplyPersistableSettings is called.
+    ///     3) CanSave is called.
+    ///
+    /// On clicking Save  in the Manaege Bug Tracking dialog
+    ///     1) Actually nothing in the bug tracker is called
+    ///
+    /// On clicking Cancel in the Manaege Bug Tracking dialog
+    ///     1) ApplyPersistableSettings is called
+    ///     2) CanSave is called
+    ///
+    /// On closing the project:
+    ///     1) ResetSettings is called. The plugin should remove all active settings so that the next project doesn't recieve
+    ///        carried over settings.
+    ///     2) CanSave is called.
+    ///
+    /// On clicking Submit Bug in the Results view
+    ///     1) SubmitBug is called
+    ///
     /// </summary>
     public class JiraBugTracker : IBugTracker, IBugTrackerConnectionUI
     {
@@ -120,8 +162,20 @@ namespace Telerik.TestStudio.Jira.BugTracking
         public bool ApplyPersistableSettings(BugTrackerPersistableSettings settings)
         {
             this.activeJiraConnection = settings as JiraConnectionModel;
-            ResetSettings();
-            return true;
+            if (null != this.activeJiraConnection)
+            {
+                this.JiraSettings.ServerName = this.activeJiraConnection.ServerName;
+                this.JiraSettings.User = this.activeJiraConnection.User;
+                this.JiraSettings.Password = this.activeJiraConnection.Password;
+                this.JiraSettings.ErrorMessage = string.Empty;
+                // This will cause SelectedProject to be reset to null due to data binding.
+                // Be sure to reselect SelectedProject afterward.
+                this.JiraSettings.ProjectsList = new List<JiraProject>();
+                this.JiraSettings.ProjectsList.Add(this.activeJiraConnection.SelectedProject);
+                this.JiraSettings.SelectedProject = this.activeJiraConnection.SelectedProject;
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -138,24 +192,15 @@ namespace Telerik.TestStudio.Jira.BugTracking
         }
 
         /// <summary>
-        /// Resets bug tracker connection settings. Called when user clicks Cancel in the UI, and when the UI is first loaded.
+        /// Resets bug tracker connection settings to default settings.
+        /// Called when a project containg Jira settings is first opened, but before settings are loaded.
+        /// Also called when the project is closed.
         /// Useful method to clean up the bug tracker data internally.
         /// </summary>
         public void ResetSettings()
         {
-            // Copy the current active settings to the ViewModel to reset the ViewModel
-            if (null != this.activeJiraConnection)
-            {
-                this.JiraSettings.ServerName = this.activeJiraConnection.ServerName;
-                this.JiraSettings.User = this.activeJiraConnection.User;
-                this.JiraSettings.Password = this.activeJiraConnection.Password;
-                this.JiraSettings.ErrorMessage = string.Empty;
-                // This will cause SelectedProject to be reset to null due to data binding.
-                // Be sure to reselect SelectedProject afterward.
-                this.JiraSettings.ProjectsList = new List<JiraProject>();
-                this.JiraSettings.ProjectsList.Add(this.activeJiraConnection.SelectedProject);
-                this.JiraSettings.SelectedProject = this.activeJiraConnection.SelectedProject;
-            }
+            this.activeJiraConnection = null;
+            this.settingsUiControl = null;
         }
 
         /// <summary>
@@ -207,7 +252,8 @@ namespace Telerik.TestStudio.Jira.BugTracking
         }
 
         /// <summary>
-        /// Optional, Called whenever the bug tracker UI is closed for any reason.
+        /// Optional. Called whenever the bug tracker UI is closed for any reason.
+        /// Clear the view for the next project to be loaded, which may not have Jira settings.
         /// </summary>
         public void OnClose()
         {
@@ -215,7 +261,8 @@ namespace Telerik.TestStudio.Jira.BugTracking
         }
 
         /// <summary>
-        /// Optional, enables customizing the save click handling.
+        /// Optional. Called whenever user clicks Save in the UI to save the settings.
+        /// Enables customizing the save click handling.
         /// We'll make the settings in the ViewModel the active settings for submitting bugs.
         /// </summary>
         public void OnSave()
