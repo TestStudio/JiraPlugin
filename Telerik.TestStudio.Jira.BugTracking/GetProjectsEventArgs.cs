@@ -12,14 +12,14 @@ namespace Telerik.TestStudio.Jira.BugTracking
 
         public GetProjectsEventArgs(ListBox target)
         {
-            this.TargetListBos = target;
+            this.TargetListBox = target;
         }
 
         #endregion
 
         #region Properties
 
-        public ListBox TargetListBos { get; private set; }
+        public ListBox TargetListBox { get; private set; }
 
         #endregion
     }
