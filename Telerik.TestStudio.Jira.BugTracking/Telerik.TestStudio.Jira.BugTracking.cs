@@ -39,10 +39,10 @@ namespace Telerik.TestStudio.Jira.BugTracking
     ///     2) ApplyPersistableSettings is called.
     ///     3) CanSave is called.
     ///
-    /// On clicking Save  in the Manaege Bug Tracking dialog
+    /// On clicking Save  in the Manage Bug Tracking dialog
     ///     1) Actually nothing in the bug tracker is called
     ///
-    /// On clicking Cancel in the Manaege Bug Tracking dialog
+    /// On clicking Cancel in the Manage Bug Tracking dialog
     ///     1) ApplyPersistableSettings is called
     ///     2) CanSave is called
     ///
@@ -84,7 +84,10 @@ namespace Telerik.TestStudio.Jira.BugTracking
             set
             {
                 this.jiraConnSettings = value;
-                this.jiraConnSettings.PropertyChanged += new PropertyChangedEventHandler(jiraConnSettings_PropertyChanged);
+                if (null != this.jiraConnSettings)
+                {
+                    this.jiraConnSettings.PropertyChanged += new PropertyChangedEventHandler(jiraConnSettings_PropertyChanged);
+                }
             }
         }
 
@@ -199,6 +202,7 @@ namespace Telerik.TestStudio.Jira.BugTracking
         /// </summary>
         public void ResetSettings()
         {
+            this.JiraSettings = null;
             this.activeJiraConnection = null;
             this.settingsUiControl = null;
         }
@@ -286,25 +290,25 @@ namespace Telerik.TestStudio.Jira.BugTracking
         /// <param name="e">Event arguments.</param>
         private void SettingsControlLoaded(object sender, System.Windows.RoutedEventArgs e)
         {
-            // We need to update the 'Done' (CanClose) and 'Cancel' (CanSave) buttons in the UI.
+            // We need to update the 'Save' (CanSave) and 'Cancel' (CanCancel) buttons in the UI.
             this.OnPropertyChanged("CanSave");
             this.OnPropertyChanged("CanClose");
 
-            // Locate the Done button in the frame wrapping us
-            FrameworkElement DoneButton;
+            // Locate the Save button in the frame wrapping us
+            FrameworkElement SaveButton;
 
-            DoneButton = (FrameworkElement)VisualTreeHelper.GetParent(this.SettingsControl);
-            while (DoneButton.Name != "AppContent")
+            SaveButton = (FrameworkElement)VisualTreeHelper.GetParent(this.SettingsControl);
+            while (SaveButton.Name != "AppContent")
             {
-                DoneButton = (FrameworkElement)VisualTreeHelper.GetParent(DoneButton);
+                SaveButton = (FrameworkElement)VisualTreeHelper.GetParent(SaveButton);
             }
 
-            DoneButton = (FrameworkElement)VisualTreeHelper.GetParent(DoneButton);    // returns Grid
-            DoneButton = (FrameworkElement)VisualTreeHelper.GetChild(DoneButton, 1);  // returns ButtonsPanelBorder
-            DoneButton = (FrameworkElement)VisualTreeHelper.GetChild(DoneButton, 0);  // returns ButtonsPanel
-            DoneButton = (FrameworkElement)VisualTreeHelper.GetChild(DoneButton, 1);  // returns Yes Button aka Done
+            SaveButton = (FrameworkElement)VisualTreeHelper.GetParent(SaveButton);    // returns Grid
+            SaveButton = (FrameworkElement)VisualTreeHelper.GetChild(SaveButton, 1);  // returns ButtonsPanelBorder
+            SaveButton = (FrameworkElement)VisualTreeHelper.GetChild(SaveButton, 0);  // returns ButtonsPanel
+            SaveButton = (FrameworkElement)VisualTreeHelper.GetChild(SaveButton, 1);  // returns Yes Button aka Done
             
-            // Bind the IsDefault property of the Done button
+            // Bind the IsDefault property of the Save button
             // to the SelectedProject property of the UI's listbox.
             // This will cause IsDefault to be set to true when the user
             // selects a project from the list.
@@ -313,7 +317,7 @@ namespace Telerik.TestStudio.Jira.BugTracking
             myBinding.Path = new PropertyPath("SelectedItem");
             myBinding.Converter = new SelectedProjectToBoolConverter();
             myBinding.ConverterParameter = "False";
-            DoneButton.SetBinding(Button.IsDefaultProperty, myBinding);
+            SaveButton.SetBinding(Button.IsDefaultProperty, myBinding);
         }
 
         /// <summary>
