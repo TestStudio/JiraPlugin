@@ -261,7 +261,8 @@ namespace Telerik.TestStudio.Jira.BugTracking
         /// </summary>
         public void OnClose()
         {
-            // Nothing we need to do here.
+            // Clear out the UI settings.
+            this.JiraSettings = null;
         }
 
         /// <summary>
