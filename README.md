@@ -1,6 +1,8 @@
 JiraPlugin
 ==========
-This project provides a Jira compatible plug-in DLL that may be used with Telerik Test Studio for bug tracking. See http://docs.telerik.com/teststudio/user-guide/extensions/bug-tracking/configuration.aspx for additional information on bug tracking with Test Studio.
+This project provides a JIRA compatible plug-in DLL that may be used with Telerik Test Studio for bug tracking. See http://docs.telerik.com/teststudio/user-guide/extensions/bug-tracking/configuration.aspx for additional information on bug tracking with Test Studio.
+
+You must have Test Studio 2014.1.421 or above to use the plug-in. Contact Telerik Test Studio Technical Support to obtain this custom build if needed.
 
 INSTALLATION INSTRUCTIONS
 
