@@ -40,6 +40,11 @@ local.properties
 *.suo
 *.user
 *.sln.docstates
+.Justcode/
+BindValidationSample/
+Custom_RoutedCommand/
+WpfApplication1/
+Telerik.TestStudio.Jira.BugTracking.sln
 
 # Build results
 
