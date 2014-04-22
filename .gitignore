@@ -48,8 +48,8 @@ Telerik.TestStudio.Jira.BugTracking.sln
 
 # Build results
 
-[Dd]ebug/
-[Rr]elease/
+Telerik.TestStudio.Jira.BugTracking/[Dd]ebug/
+Telerik.TestStudio.Jira.BugTracking/[Rr]elease/
 x64/
 build/
 [Bb]in/
@@ -65,7 +65,7 @@ build/
 *.meta
 *.obj
 *.pch
-*.pdb
+# *.pdb
 *.pgc
 *.pgd
 *.rsp
