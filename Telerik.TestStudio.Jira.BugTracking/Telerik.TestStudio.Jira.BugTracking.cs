@@ -214,7 +214,11 @@ namespace Telerik.TestStudio.Jira.BugTracking
         /// <param name="bug">The bug from Test Studio to be created.</param>
         /// <returns>The newly created bug ID. Unfortunately Test Studio only accepts an int while
         /// JIRA bug ID's are something like TSCB-13.</returns>
+#if Use2014_1_421
         public int SubmitBug(IBug bug)
+#else
+        public string SubmitBug(IBug bug)
+#endif
         {
             string error;
 
@@ -222,9 +226,13 @@ namespace Telerik.TestStudio.Jira.BugTracking
             string bugID = jiraComm.SubmitBug(activeJiraConnection.SelectedProject.key, bug.Title, bug.Description, bug.Priority,
                 bug.CreatedDate, bug.Author, bug.AssignedTo, bug.Attachments, out error);
             this.ErrorMessage = error;
+#if Use2014_1_421
             // JIRA returns something like TSCB-14.
             // Return only the integer portion (until Test Studio is changed to take a string).
             return int.Parse(bugID.Substring(bugID.IndexOf('-')));
+#else
+            return bugID;
+#endif
         }
 
         #endregion
